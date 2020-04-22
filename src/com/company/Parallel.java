@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Scanner; // Import the Scanner class to read text files
+import java.util.Scanner;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.ExecutionException;
@@ -17,6 +17,7 @@ import java.util.stream.*;
 
 public class Parallel {
 
+    // zvoleny pocet vlaken
     public static int numberOfThreads = 3;
 
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
@@ -66,17 +67,15 @@ public class Parallel {
         // ZAHAJENI MERENI 2 (algoritmus - proces filtrovani stopwords)
         Instant start2 = Instant.now();
 
-        // vytvoreni listu pro vysledne stringy po zpracovani
-        //List<String> results = new ArrayList<String>();
-
-
         // vytvoreni poolu s urcitym poctem vlaken
         ForkJoinPool customThreadPool = new ForkJoinPool(numberOfThreads);
 
+        // odeslani ulohy na pool a ziskani vysledku do promenne results
         List<String> results = customThreadPool.submit(
                 () -> STACK.parallelStream().map(rev -> filtering(rev, stopwords)).collect(Collectors.toList())
         ).get();
 
+        // ukonceni poolu
         customThreadPool.shutdown();
 
 

@@ -1,4 +1,5 @@
 package com.company;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -6,7 +7,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Scanner; // Import the Scanner class to read text files
+import java.util.Scanner;
 import org.apache.commons.lang3.StringUtils;
 
 public class Main {
