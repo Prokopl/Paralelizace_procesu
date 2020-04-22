@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Scanner;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.cli.*;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -17,10 +18,45 @@ import java.util.stream.*;
 
 public class Parallel {
 
-    // zvoleny pocet vlaken
-    public static int numberOfThreads = 3;
-
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
+
+        // ZPRACOVANI ARGUMENTU
+        Options options = new Options();
+
+        Option threadsOpt = new Option("t", "threads", true, "number of threads");
+        threadsOpt.setRequired(true);
+        options.addOption(threadsOpt);
+
+        Option fileOpt = new Option("f", "file", true, "json file with reviews data");
+        fileOpt.setRequired(true);
+        options.addOption(fileOpt);
+
+        Option stopwordsOpt = new Option("s", "stopwords", true, "list of stopwords");
+        stopwordsOpt.setRequired(true);
+        options.addOption(stopwordsOpt);
+
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd = null;
+
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("utility-name", options);
+
+            System.exit(1);
+        }
+
+        // zvoleny pocet vlaken
+        int numberOfThreads = Integer.parseInt(cmd.getOptionValue("threads"));
+
+        // zvolena cesta k datovemu souboru
+        String inputFilePath = cmd.getOptionValue("file");
+
+        // zvolena cesta k souboru stopwords
+        String inputStopwordsPath = cmd.getOptionValue("stopwords");
+
 
         System.out.println("Zvoleny pocet vlaken: " + numberOfThreads + "\n*****");
 
@@ -28,7 +64,7 @@ public class Parallel {
         Instant start = Instant.now();
 
         // nacteni stopwords ze souboru a ulozeni do pole stringu "stopwords"
-        Path filePath = new File("stopwords2.txt").toPath();
+        Path filePath = new File(inputStopwordsPath).toPath();
         Charset charset = Charset.defaultCharset();
         List<String> stringList = Files.readAllLines(filePath, charset);
         String[] stopwords = stringList.toArray(new String[]{});
@@ -38,7 +74,7 @@ public class Parallel {
 
         try {
             // nacteni souboru s daty a vytvoreni scanneru pro cteni
-            File myObj = new File("Automotive_5.json");
+            File myObj = new File(inputFilePath);
             Scanner myReader = new Scanner(myObj);
             // zpracovani kazdeho radku souboru s daty
             while (myReader.hasNextLine()) {
