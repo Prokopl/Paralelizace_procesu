@@ -20,6 +20,9 @@ public class Parallel {
 
     public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
 
+        // ZAHAJENI MERENI 1 (zpracovani argumentu + doba nacteni dat ze souboru + nacteni stopwords)
+        Instant start = Instant.now();
+
         // ZPRACOVANI ARGUMENTU
         Options options = new Options();
 
@@ -59,9 +62,6 @@ public class Parallel {
 
 
         System.out.println("Zvoleny pocet vlaken: " + numberOfThreads + "\n*****");
-
-        // ZAHAJENI MERENI 1 (doba nacteni dat ze souboru + nacteni stopwords)
-        Instant start = Instant.now();
 
         // nacteni stopwords ze souboru a ulozeni do pole stringu "stopwords"
         Path filePath = new File(inputStopwordsPath).toPath();

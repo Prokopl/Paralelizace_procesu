@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Scanner;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.cli.*;
 
 public class Main {
 
@@ -16,8 +17,38 @@ public class Main {
         // ZAHAJENI MERENI 1 (doba nacteni dat ze souboru + nacteni stopwords)
         Instant start = Instant.now();
 
+        // ZPRACOVANI ARGUMENTU
+        Options options = new Options();
+
+        Option fileOpt = new Option("f", "file", true, "json file with reviews data");
+        fileOpt.setRequired(true);
+        options.addOption(fileOpt);
+
+        Option stopwordsOpt = new Option("s", "stopwords", true, "list of stopwords");
+        stopwordsOpt.setRequired(true);
+        options.addOption(stopwordsOpt);
+
+        CommandLineParser parser = new DefaultParser();
+        HelpFormatter formatter = new HelpFormatter();
+        CommandLine cmd = null;
+
+        try {
+            cmd = parser.parse(options, args);
+        } catch (ParseException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("utility-name", options);
+
+            System.exit(1);
+        }
+
+        // zvolena cesta k datovemu souboru
+        String inputFilePath = cmd.getOptionValue("file");
+
+        // zvolena cesta k souboru stopwords
+        String inputStopwordsPath = cmd.getOptionValue("stopwords");
+
         // nacteni stopwords ze souboru a ulozeni do pole stringu "stopwords"
-        Path filePath = new File("stopwords2.txt").toPath();
+        Path filePath = new File(inputStopwordsPath).toPath();
         Charset charset = Charset.defaultCharset();
         List<String> stringList = Files.readAllLines(filePath, charset);
         String[] stopwords = stringList.toArray(new String[]{});
@@ -27,7 +58,7 @@ public class Main {
 
         try {
             // nacteni souboru s daty a vytvoreni scanneru pro cteni
-            File myObj = new File("Automotive_5.json");
+            File myObj = new File(inputFilePath);
             Scanner myReader = new Scanner(myObj);
             // zpracovani kazdeho radku souboru s daty
             while (myReader.hasNextLine()) {
